@@ -15,6 +15,10 @@ class Formatter:
             dest_dir = '.',
             copy=False
         ):
+        dataset_name = Path(dataset_name)
+        dest_dir = Path(dest_dir) / dataset_name
+        dest_dir.mkdir(exist_ok=False, parents=True)
+
         source_dir = Path(source_dir)
         dest_dir = Path(dest_dir)
         dataset_name = Path(dataset_name)
@@ -27,6 +31,8 @@ class Formatter:
 
         print(dest_dir)
 
+        imgs = (dest_dir / 'images')
+        labels = (dest_dir / 'labels')
         imgs = (dest_dir / 'images')
         labels = (dest_dir / 'labels')
         labels.mkdir()
@@ -48,6 +54,15 @@ class Formatter:
                     else:
                         shutil.move(img, dest_dir / 'images' / tp / img_name)
                         shutil.move(label, dest_dir / 'labels' / tp / label_name)
+                img_name = img.split('/')[-1]
+                label_name = label.split('/')[-1]
+
+                if copy:
+                    shutil.copy(img, dest_dir / 'images' / tp / img_name)
+                    shutil.copy(label, dest_dir / 'labels' / tp / label_name)
+                else:
+                    shutil.move(img, dest_dir / 'images' / tp / img_name)
+                    shutil.move(label, dest_dir / 'labels' / tp / label_name)
 
         
 
