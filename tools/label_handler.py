@@ -61,10 +61,14 @@ class LabelHandler:
     def merge_labels(
         source_path : str,
         dest_path : str,
-        merge_ids : list[int],
+        merge_ids : list[int] | int,
         condition = None,
         output_dir = 'merged_labels'
     ):
+        
+        if type(merge_ids) == int:
+            merge_ids = [merge_ids]
+
         source_paths = get_labels(source_path)
         dest_paths = get_labels(dest_path)
         source_paths.sort()
@@ -79,16 +83,16 @@ class LabelHandler:
             new_lines = []
             for id in merge_ids:
                 with open(path_sorce, 'r') as file:
-                    source_annotations = file.readlines()
+                    source_lines = file.readlines()
                 with open(path_dest, 'r') as file:
-                    dest_annotations = file.readlines()
+                    dest_lines = file.readlines()
                 
-                source_lines = LabelHandler.__get_id_lines(id, source_annotations)
-                dest_lines = LabelHandler.__get_id_lines(id, dest_annotations)
-                n_sorce = len(source_lines)
-                n_dest = len(dest_lines)
+                source_lines_id = LabelHandler.__get_id_lines(id, source_lines)
+                dest_lines_id = LabelHandler.__get_id_lines(id, dest_lines)
+                n_sorce = len(source_lines_id)
+                n_dest = len(dest_lines_id)
 
-                for line in source_lines:
+                for line in source_lines_id:
                     l = locals()
                     condition(l)
                     if l.get('skip_file'):
@@ -101,13 +105,13 @@ class LabelHandler:
                     break
                 elif l.get('skip_line'):
                     continue
-            if new_lines:
-                name = path_sorce.split("/")[-1]
-                with open(output_dir + '/' + name, 'w') as file:
-                    file.writelines(dest_lines)
-                    file.write('\n')
-                    file.writelines(new_lines)
-                    
+                
+            name = path_sorce.split("/")[-1]
+            with open(output_dir + '/' + name, 'w') as file:
+                file.writelines(dest_lines)
+                file.write('\n')
+                file.writelines(new_lines)
+                
                 
 
     @staticmethod
