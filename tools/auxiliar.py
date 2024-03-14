@@ -25,6 +25,7 @@ def mkdir_if_success(func):
             raise e
     return wrapper
 
+
 # PATHS
 def get_img_label_pairs(path: str, ignore_single=False) -> list[tuple[str, str]]:
     path = Path(path)
@@ -68,6 +69,8 @@ def get_img_label_pair(namepath: str) -> tuple[str, str]:
 
 def get_labels(path: str) -> list[str]:
     path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Path {path} does not exist")
     if path.is_file():
         return [str(path)]
     label_files = list(path.glob("*.txt"))
@@ -75,6 +78,8 @@ def get_labels(path: str) -> list[str]:
 
 def get_images(path: str) -> list[str]:
     path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Path {path} does not exist")
     if path.is_file():
         return [str(path)]
     img_files = list(path.glob("*.jpg")) + list(path.glob("*.png"))
