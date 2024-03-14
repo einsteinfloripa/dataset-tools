@@ -17,15 +17,17 @@ class Formatter:
         ):
         source_dir = Path(source_dir)
         dest_dir = Path(dest_dir)
+        dataset_name = Path(dataset_name)
+        
         pairs = get_img_label_pairs(source_dir)
         sorted_pairs = Formatter.__sort_pairs(pairs, test, train, val)
+        
+        dest_dir = dest_dir / dataset_name
+        dest_dir.mkdir(exist_ok=False, parents=True)
 
-        dataset_name = Path(dataset_name)
-        dataset_name.mkdir(exist_ok=False, parents=True)
 
-
-        imgs = (dataset_name / 'images')
-        labels = (dataset_name / 'labels')
+        imgs = (dest_dir / 'images')
+        labels = (dest_dir / 'labels')
         labels.mkdir()
         imgs.mkdir()
         for percent, name in [(test, 'test'), (train, 'train'), (val, 'val')]:
