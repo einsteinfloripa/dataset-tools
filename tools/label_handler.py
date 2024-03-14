@@ -77,7 +77,8 @@ class LabelHandler:
             spname = sp.split("/")[-1]
             dpname = dp.split("/")[-1]
             if spname != dpname:
-                raise Exception("Source and dest paths must have the same names")
+                raise Exception(
+                    f"Source and dest paths must have the same names [{spname} != {dpname}]")
 
         for path_sorce, path_dest in zip(source_paths, dest_paths):
             new_lines = []
@@ -105,7 +106,7 @@ class LabelHandler:
                     break
                 elif l.get('skip_line'):
                     continue
-                
+
             name = path_sorce.split("/")[-1]
             with open(output_dir + '/' + name, 'w') as file:
                 file.writelines(dest_lines)
