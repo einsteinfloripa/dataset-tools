@@ -9,6 +9,9 @@ datasets
 models
 venv
 
+datasets
+models
+
 # Distribution / packaging
 .Python
 build/
