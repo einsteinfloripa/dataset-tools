@@ -25,6 +25,7 @@ class Formatter:
         dest_dir = dest_dir / dataset_name
         dest_dir.mkdir(exist_ok=False, parents=True)
 
+        print(dest_dir)
 
         imgs = (dest_dir / 'images')
         labels = (dest_dir / 'labels')
