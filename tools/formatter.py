@@ -36,8 +36,8 @@ class Formatter:
         for tp, pairs in sorted_pairs.items():
             for pair in pairs:
                 img, label = pair
-                img_name = img.split('\\')[-1]
-                label_name = label.split('\\')[-1]
+                img_name = img.split('/')[-1]
+                label_name = label.split('/')[-1]
                 for img, label in pairs:
                     if copy:
                         shutil.copy(img, dest_dir / 'images' / tp / img_name)

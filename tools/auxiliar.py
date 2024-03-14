@@ -42,7 +42,7 @@ def get_img_label_pairs(path: str, ignore_single=False) -> list[tuple[str, str]]
     found = []
     for img in img_files:
         if img.stem in labels:
-            found.append((str(img), f"{str(img.parent)}\\{str(img.stem)}.txt"))
+            found.append((str(img), f"{str(img.parent)}/{str(img.stem)}.txt"))
             continue
         if not ignore_single:    
             raise ValueError(f"Image {img} does not have a label file in {path}")

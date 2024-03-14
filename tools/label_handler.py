@@ -16,7 +16,7 @@ class LabelHandler:
             ):
         paths = get_labels(path)
         for p in paths:
-            name = p.split("\\")[-1]
+            name = p.split("/")[-1]
             with open(p, 'r') as file:
                 annotations = file.readlines()
             new_annotations = []
@@ -24,7 +24,7 @@ class LabelHandler:
                 class_id, x_center, y_center, box_width, box_height = map(float, annotation.split())
                 if int(class_id) in wanted_classes:
                     new_annotations.append(annotation)
-            with open(f'{output_dir}\\{name}', 'w') as file:
+            with open(f'{output_dir}/{name}', 'w') as file:
                 file.writelines(new_annotations)
     
     @staticmethod
@@ -36,7 +36,7 @@ class LabelHandler:
             ):
         paths = get_labels(path)
         for path in paths:
-            name = path.split("\\")[-1]
+            name = path.split("/")[-1]
             with open(path, 'r') as file:
                 annotations = file.readlines()
                 new_annotations = []
@@ -45,5 +45,5 @@ class LabelHandler:
                     if int(class_id) in remap_dict:
                         class_id = remap_dict[int(class_id)]
                     new_annotations.append(f"{int(class_id)} {x_center} {y_center} {box_width} {box_height}\n")
-            with open(f'{output_dir}\\{name}', 'w') as file:
+            with open(f'{output_dir}/{name}', 'w') as file:
                 file.writelines(new_annotations)

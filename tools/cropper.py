@@ -33,7 +33,7 @@ class Cropper:
 
         for pair in get_img_label_pairs(path):
             image_path = pair[0]
-            image_name = image_path.split("\\")[-1].split(".")[0]
+            image_name = image_path.split("/")[-1].split(".")[0]
             label_path = pair[1]
             image = cv2.imread(image_path)
 

@@ -19,9 +19,9 @@ p = Path(['something'])
 #         f.writelines(updated_lines)
 
 
-# files = Path('').glob('PS_second_stage\\labels\\train\\*.txt')
+# files = Path('').glob('PS_second_stage/labels/train/*.txt')
 # for filepath in files:
-#     process_file(filepath, f'data\\{filepath.name}')
+#     process_file(filepath, f'data/{filepath.name}')
 
 
 

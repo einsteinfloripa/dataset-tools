@@ -49,5 +49,5 @@ class Drawer:
                 x_max = int(x_center + box_width / 2)
                 y_max = int(y_center + box_height / 2)
                 cv2.rectangle(image, (x_min, y_min), (x_max, y_max), cls.colors[int(class_id)], 4)
-            output_image_path = f'{output_dir}\\{image_path.split("\\")[-1]}'
+            output_image_path = f'{output_dir}/{image_path.split("/")[-1]}'
             cv2.imwrite(output_image_path, image)
