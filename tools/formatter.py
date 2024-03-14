@@ -15,17 +15,18 @@ class Formatter:
             dest_dir = '.',
             copy=False
         ):
+        dataset_name = Path(dataset_name)
+        dest_dir = Path(dest_dir) / dataset_name
+        dest_dir.mkdir(exist_ok=False, parents=True)
+
         source_dir = Path(source_dir)
-        dest_dir = Path(dest_dir)
         pairs = get_img_label_pairs(source_dir)
         sorted_pairs = Formatter.__sort_pairs(pairs, test, train, val)
 
-        dataset_name = Path(dataset_name)
-        dataset_name.mkdir(exist_ok=False, parents=True)
 
 
-        imgs = (dataset_name / 'images')
-        labels = (dataset_name / 'labels')
+        imgs = (dest_dir / 'images')
+        labels = (dest_dir / 'labels')
         labels.mkdir()
         imgs.mkdir()
         for percent, name in [(test, 'test'), (train, 'train'), (val, 'val')]:
@@ -38,13 +39,13 @@ class Formatter:
                 img, label = pair
                 img_name = img.split('\\')[-1]
                 label_name = label.split('\\')[-1]
-                for img, label in pairs:
-                    if copy:
-                        shutil.copy(img, dest_dir / 'images' / tp / img_name)
-                        shutil.copy(label, dest_dir / 'labels' / tp / label_name)
-                    else:
-                        shutil.move(img, dest_dir / 'images' / tp / img_name)
-                        shutil.move(label, dest_dir / 'labels' / tp / label_name)
+
+                if copy:
+                    shutil.copy(img, dest_dir / 'images' / tp / img_name)
+                    shutil.copy(label, dest_dir / 'labels' / tp / label_name)
+                else:
+                    shutil.move(img, dest_dir / 'images' / tp / img_name)
+                    shutil.move(label, dest_dir / 'labels' / tp / label_name)
 
         
 
