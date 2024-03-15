@@ -13,26 +13,18 @@ class Formatter:
             train,
             val,
             dest_dir = '.',
-            copy=False
+            copy=True
         ):
         dataset_name = Path(dataset_name)
         dest_dir = Path(dest_dir) / dataset_name
         dest_dir.mkdir(exist_ok=False, parents=True)
 
         source_dir = Path(source_dir)
-        dest_dir = Path(dest_dir)
-        dataset_name = Path(dataset_name)
-        
         pairs = get_img_label_pairs(source_dir)
         sorted_pairs = Formatter.__sort_pairs(pairs, test, train, val)
-        
-        dest_dir = dest_dir / dataset_name
-        dest_dir.mkdir(exist_ok=False, parents=True)
 
-        print(dest_dir)
 
-        imgs = (dest_dir / 'images')
-        labels = (dest_dir / 'labels')
+
         imgs = (dest_dir / 'images')
         labels = (dest_dir / 'labels')
         labels.mkdir()
@@ -45,15 +37,6 @@ class Formatter:
         for tp, pairs in sorted_pairs.items():
             for pair in pairs:
                 img, label = pair
-                img_name = img.split('/')[-1]
-                label_name = label.split('/')[-1]
-                for img, label in pairs:
-                    if copy:
-                        shutil.copy(img, dest_dir / 'images' / tp / img_name)
-                        shutil.copy(label, dest_dir / 'labels' / tp / label_name)
-                    else:
-                        shutil.move(img, dest_dir / 'images' / tp / img_name)
-                        shutil.move(label, dest_dir / 'labels' / tp / label_name)
                 img_name = img.split('/')[-1]
                 label_name = label.split('/')[-1]
 
