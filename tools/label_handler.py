@@ -113,7 +113,15 @@ class LabelHandler:
                 file.write('\n')
                 file.writelines(new_lines)
                 
-                
+    @staticmethod
+    def remove_blank_lines(path : str):
+        paths = get_labels(path)
+        for p in paths:
+            with open(p, 'r') as file:
+                lines = file.readlines()
+            new_lines = [line.strip('\n') for line in lines if not line.isspace()]
+            with open(p, 'w') as file:
+                file.write('\n'.join(new_lines))      
 
     @staticmethod
     def __get_id_lines(id : int, lines : list[str]):
