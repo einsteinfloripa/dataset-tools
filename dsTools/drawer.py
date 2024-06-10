@@ -1,8 +1,6 @@
 import cv2
 from dsTools.auxiliar import (
-get_img_label_pairs,
-get_labels,
-get_images,
+PathParsers,
 mkdir_if_success)
 
 class Drawer:
@@ -32,7 +30,11 @@ class Drawer:
         path : str,
         output_dir = 'drawn_output'
     ):
-        for pair in get_img_label_pairs(path):
+        '''
+        Copia as imagens de um diretório para um diretorio de saida,
+        desenhando os bounding boxes de acordo com os labels.
+        '''
+        for pair in PathParsers.get_img_label_pairs(path):
             image_path, label_path = pair
             image = cv2.imread(image_path)
             height, width, _ = image.shape

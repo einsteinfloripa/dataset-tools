@@ -1,8 +1,6 @@
 import cv2
 from dsTools.auxiliar import (
-get_img_label_pairs,
-get_labels,
-get_images,
+PathParsers,
 mkdir_if_success)
 
 class LabelHandler:
@@ -18,11 +16,14 @@ class LabelHandler:
     @staticmethod
     @mkdir_if_success
     def filter_labels(
-            path : str,
-            wanted_classes : list[int],
-            output_dir = 'filtered_labels'
-            ):
-        paths = get_labels(path)
+        path : str,
+        wanted_classes : list[int],
+        output_dir = 'filtered_labels'
+        ):
+        '''
+        Filtra os labels de acordo com as classes desejadas.
+        '''
+        paths = PathParsers.get_labels(path)
         for p in paths:
             name = p.split("/")[-1]
             with open(p, 'r') as file:
@@ -37,12 +38,12 @@ class LabelHandler:
     
     @staticmethod
     @mkdir_if_success
-    def change_labels(
-            path : str,
-            remap_dict : dict[int, int],
-            output_dir = 'remaped_labels'
-            ):
-        paths = get_labels(path)
+    def remap_labels(
+        path : str,
+        remap_dict : dict[int, int],
+        output_dir = 'remaped_labels'
+        ):
+        paths = PathParsers.get_labels(path)
         for path in paths:
             name = path.split("/")[-1]
             with open(path, 'r') as file:
@@ -59,18 +60,17 @@ class LabelHandler:
     @staticmethod
     @mkdir_if_success
     def merge_labels(
-        source_path : str,
-        dest_path : str,
-        merge_ids : list[int] | int,
-        condition = None,
-        output_dir = 'merged_labels'
-    ):
-        
-        if type(merge_ids) == int:
-            merge_ids = [merge_ids]
-
-        source_paths = get_labels(source_path)
-        dest_paths = get_labels(dest_path)
+            source_path : str,
+            dest_path : str,
+            merge_ids : list[int],
+            condition = None,
+            output_dir = 'merged_labels'
+        ):
+        '''
+        Mescla os labels de source_path com os de dest_path.
+        '''
+        source_paths = PathParsers.get_labels(source_path)
+        dest_paths = PathParsers.get_labels(dest_path)
         source_paths.sort()
         dest_paths.sort()
         for sp, dp in zip(source_paths, dest_paths):
@@ -115,7 +115,11 @@ class LabelHandler:
                 
     @staticmethod
     def remove_blank_lines(path : str):
-        paths = get_labels(path)
+        '''
+        Remove linhas em branco dos arquivos de labels.
+        - inplace
+        '''
+        paths = PathParsers.get_labels(path)
         for p in paths:
             with open(p, 'r') as file:
                 lines = file.readlines()

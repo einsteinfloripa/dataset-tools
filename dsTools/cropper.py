@@ -1,8 +1,6 @@
 import cv2
 from dsTools.auxiliar import (
-get_img_label_pairs,
-get_labels,
-get_images,
+PathParsers,
 mkdir_if_success)
 
 
@@ -22,16 +20,22 @@ class Cropper:
     @classmethod
     @mkdir_if_success
     def crop_detections(
-                cls,
-                path : str,
-                target_class_id : int | list[int],
-                output_dir = 'crop_output',
-                condition : None | Condition = None,
-                txt_file = True
-                ):
-            # Read the image
+        cls,
+        path : str,
+        target_class_id : int | list[int],
+        output_dir = 'crop_output',
+        condition : None | Condition = None,
+        txt_file = True
+        ):
+        '''
+        Recorta as images de acordo com os labels YOLO.
+        * path: diretório com as imagens e os labels
+        * target_class_id: id das classes que deseja recortar
+        * output_dir: diretório de saída
+        * text_file: se True, salva os labels ajustados para as imagens recortadas
+        '''
 
-        for pair in get_img_label_pairs(path):
+        for pair in PathParsers.get_img_label_pairs(path):
             image_path = pair[0]
             image_name = image_path.split("/")[-1].split(".")[0]
             label_path = pair[1]
@@ -95,7 +99,14 @@ class Cropper:
 
 
 
-    def __get_target_boxes(target_class_id, annotations, width, height):
+    def __get_target_boxes(
+            target_class_id : int,
+            annotations : list[str],
+            width : int,
+            height : int):
+        '''
+        Separa as bounding boxes da classe alvo.
+        '''
         target_boxes = []
         for id in target_class_id:
             for annotation in annotations:

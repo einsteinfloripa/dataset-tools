@@ -2,10 +2,11 @@ import shutil
 import random
 from pathlib import Path
 
-from dsTools.auxiliar import get_img_label_pairs
+from dsTools.auxiliar import PathParsers
 
 class Formatter:
     
+    @staticmethod
     def setup_yolo(
             source_dir,
             dataset_name,
@@ -15,20 +16,29 @@ class Formatter:
             dest_dir = '.',
             copy=True
         ):
+        ''' Recebe um diretório com imagens e labels e divide em test, train e val
+        de acordo com as porcentagens passadas. Cria um diretório para ser usado em
+        um modelo YOLO. 
+        Se copy=True, copia os arquivos, senão move.
+        '''
+
         dataset_name = Path(dataset_name)
         dest_dir = Path(dest_dir) / dataset_name
         dest_dir.mkdir(exist_ok=False, parents=True)
 
         source_dir = Path(source_dir)
-        pairs = get_img_label_pairs(source_dir)
+        
+        pairs = PathParsers.get_img_label_pairs(source_dir)
         sorted_pairs = Formatter.__sort_pairs(pairs, test, train, val)
-
-
+        
+        dest_dir = dest_dir / dataset_name
+        dest_dir.mkdir(exist_ok=False, parents=True)
 
         imgs = (dest_dir / 'images')
         labels = (dest_dir / 'labels')
         labels.mkdir()
         imgs.mkdir()
+
         for percent, name in [(test, 'test'), (train, 'train'), (val, 'val')]:
             if percent > 0:
                 (imgs / f'{name}'  ).mkdir()
@@ -48,8 +58,11 @@ class Formatter:
                     shutil.move(label, dest_dir / 'labels' / tp / label_name)
 
         
-
+    @staticmethod
     def __sort_pairs(pairs, test, train, val):
+        ''' Recebe uma lista de pares de imagens e labels e divide em test, train e val
+        de acordo com as porcentagens passadas.
+        '''
         if sum([test, train, val]) != 1:
             raise ValueError('The sum of the percentages must be 1')
         n = len(pairs)
