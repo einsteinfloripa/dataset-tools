@@ -1,5 +1,5 @@
 import cv2
-from tools.auxiliar import (
+from dsTools.auxiliar import (
 get_img_label_pairs,
 get_labels,
 get_images,

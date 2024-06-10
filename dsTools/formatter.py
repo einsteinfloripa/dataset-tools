@@ -2,7 +2,7 @@ import shutil
 import random
 from pathlib import Path
 
-from tools.auxiliar import get_img_label_pairs
+from dsTools.auxiliar import get_img_label_pairs
 
 class Formatter:
     
