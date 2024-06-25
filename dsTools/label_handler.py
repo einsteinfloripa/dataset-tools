@@ -128,6 +128,15 @@ class LabelHandler:
                 file.write('\n'.join(new_lines))      
 
     @staticmethod
+    def bbox2label(bbox):
+        x, y, w, h = bbox.nxywh() 
+        return f"{bbox.id} {x} {y} {w} {h}"
+
+    @staticmethod
+    def label2bbox(line, img):
+        pass
+
+    @staticmethod
     def __get_id_lines(id : int, lines : list[str]):
         return [line for line in lines if int(line.split()[0]) == id]
 

@@ -1,7 +1,9 @@
 import inspect
-import re
+import math
+import cv2
 from pathlib import Path
 
+###### PATH RELATED FUNCTIONS ######
 
 def mkdir_if_success(func):
     '''
@@ -29,7 +31,6 @@ def mkdir_if_success(func):
                 path.rmdir()
             raise e
     return wrapper
-
 
 class PathParsers:
     @staticmethod
@@ -113,3 +114,85 @@ class PathParsers:
             return [str(path)]
         img_files = list(path.glob("*.jpg")) + list(path.glob("*.png"))
         return [str(path) for path in img_files]
+
+###### IMAGE PROCESSING FUNCTIONS ######
+
+class Miscellaneous:
+    '''Miscellaneous image processing functions'''
+
+    @staticmethod
+    def rotate_point(point, angle, origin):
+        angle = math.radians(angle)
+        w, h = origin
+        x1, y1, = point
+        # Transforma as coordenadas para o sistema cartesiano
+        y1 = h - y1
+        x1 -= w
+        # Calcula a posiçao dos pontos após a rotação
+        x1_ = x1 * math.cos(angle) - y1 * math.sin(angle)
+        y1_ = x1 * math.sin(angle) + y1 * math.cos(angle)
+        # Transforma as coordenadas para o sistema da imagem
+        y1_ = h - y1_
+        x1_ += w
+        # Atualiza os valores'
+        return (x1_, y1_)
+
+    @staticmethod
+    def ef_get_tilt(img, draw=False):
+        '''Recebe uma prova einsteinfloripa e retorna o ângulo de inclinação da prova.'''
+        # Cria uma cópia a parte superior da imagem
+        img_ = img[0:int(img.shape[0]*0.15), 0:img.shape[1]].copy()
+        # Aplica um blur para suavizar a imagem
+        img_ = cv2.GaussianBlur(img_, (5, 5), 0)
+        # Filtra a imagem para remover o ruído
+        img_ = cv2.bilateralFilter(img_, 9, 75, 75)
+
+        # Converte a imagem para tons de cinza
+        # img_ = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
+        
+        # Aplica um filtro para detecçao de bordas
+        edges = cv2.Canny(img_, 50, 200)
+        # Detecta os contornos
+        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Identifica os quadrados
+        squares = []
+        for cnt in contours:
+            # Aproxima o contorno irregular por um polígono
+            epsilon = 0.02 * cv2.arcLength(cnt, True)
+            approx = cv2.approxPolyDP(cnt, epsilon, True)
+
+            # Checa se a aproximaçao tem 4 lados e é convexo
+            if len(approx) == 4 and cv2.isContourConvex(approx):
+                (x, y, w, h) = cv2.boundingRect(approx)
+                aspect_ratio = float(w) / h
+                if 0.9 <= aspect_ratio <= 1.1:  # Aspect ratio perto de 1
+                    squares.append(approx)
+        
+        # Encontra o centro de cada quadrado
+        centers = []
+        for square in squares:
+            M = cv2.moments(square)
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+                centers.append((cX, cY))
+        centers.sort(key=lambda x: x[0])
+
+        if draw:
+            for square in squares:
+                cv2.drawContours(img_, [square], -1, (0, 255, 0), 3)
+            for center in centers:
+                cv2.circle(img_, (cX, cY), 5, (255, 0, 0), -1) 
+            cv2.imwrite("output.jpg", img_)
+
+        # Calcula a inclinação da prova
+        tilt = 0
+        if len(squares) == 2:
+            tilt = - math.degrees(math.atan( # menos porque o eixo y é invertido
+                (centers[1][1] - centers[0][1]) / (centers[1][0] - centers[0][0])
+            ))
+            return tilt
+        else:
+            print("Could not find only two squares in the image.")
+            return

@@ -1,4 +1,6 @@
 import cv2
+
+from dsTools.defs import Bbox
 from dsTools.auxiliar import (
 PathParsers,
 mkdir_if_success)
@@ -18,8 +20,34 @@ class Cropper:
             pass
 
     @classmethod
+    def crop(cls, bbox, copy=False):
+        '''Funçao principal para recortar uma imagem.'''
+        # Crop the region of interest
+        img = bbox.img
+        x1, y1, x2, y2 = bbox.xyxy()
+        if copy:
+            cropped_image = img[y1:y2, x1:x2].copy()
+        else:
+            cropped_image = img[y1:y2, x1:x2]
+        
+        return cropped_image
+
+    @classmethod
+    def crop_all(self, bboxes, img, copy=False):
+        cropped_images = []
+        for i, detection in enumerate(bboxes):
+                id, bbox = (detection.id, detection.xyxy())
+                # Crop the region of interest
+                if copy:
+                    cropped_image = img[bbox[1]:bbox[3], bbox[0]:bbox[2]].copy()
+                else:
+                    cropped_image = img[bbox[1]:bbox[3], bbox[0]:bbox[2]]
+                cropped_images.append(cropped_image)
+        return cropped_images
+
+    @classmethod
     @mkdir_if_success
-    def crop_detections(
+    def crop_from_labels(
         cls,
         path : str,
         target_class_id : int | list[int],
@@ -39,17 +67,19 @@ class Cropper:
             image_path = pair[0]
             image_name = image_path.split("/")[-1].split(".")[0]
             label_path = pair[1]
-            image = cv2.imread(image_path)
+            img = cv2.imread(image_path)
 
             # Get image dimensions
-            height, width, _ = image.shape
+            height, width, _ = img.shape
 
             # Read YOLO annotations from the text file
             with open(label_path, 'r') as file:
                 annotations = file.readlines()
 
             # Find the target class bounding box
-            target_boxes = cls.__get_target_boxes(target_class_id, annotations, width, height)
+            target_boxes = cls.__get_target_boxes_from_annotations(
+                target_class_id, annotations, img
+            )
 
             #TODO: implementa a way to check if the boxes ovelap too much
                     
@@ -57,10 +87,9 @@ class Cropper:
                 print(f"No bounding box found for class {target_class_id} in {label_path}")
                 continue
 
-            for i, detection in enumerate(target_boxes):
-                id, bbox = detection
+            for i, bbox in enumerate(target_boxes):
                 # Crop the region of interest
-                cropped_image = image[bbox[1]:bbox[3], bbox[0]:bbox[2]]
+                cropped_image = cls.crop(img, bbox)
 
                 # Save the cropped image
                 output_image_path = f'{output_dir}/{image_name}-crop-{id}-{i}.jpg'
@@ -98,15 +127,16 @@ class Cropper:
                     output_file.writelines(adjusted_annotations)
 
 
-
-    def __get_target_boxes(
+    def __get_target_boxes_from_annotations(
             target_class_id : int,
             annotations : list[str],
-            width : int,
-            height : int):
+            img):
         '''
         Separa as bounding boxes da classe alvo.
         '''
+        # Get image dimensions
+        height, width, _ = img.shape
+
         target_boxes = []
         for id in target_class_id:
             for annotation in annotations:
@@ -122,6 +152,7 @@ class Cropper:
                     x_max = int(x_center + box_width / 2)
                     y_max = int(y_center + box_height / 2)
 
-                    bbox = (x_min, y_min, x_max, y_max)
-                    target_boxes.append((int(id), bbox))
+                    bbox = Bbox(x_min, y_min, x_max, y_max, width, height, id)
+                    target_boxes.append(bbox)
         return target_boxes
+

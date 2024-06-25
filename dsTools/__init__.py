@@ -1,4 +1,3 @@
-from dsTools.annotator import Annotator
 from dsTools.cropper import Cropper
 from dsTools.drawer import Drawer
 from dsTools.label_handler import LabelHandler
