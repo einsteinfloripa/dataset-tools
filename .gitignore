@@ -9,8 +9,9 @@ datasets
 models
 venv
 
-datasets
-models
+*datasets*
+*models*
+*teste*
 
 # Distribution / packaging
 .Python
