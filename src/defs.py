@@ -2,7 +2,7 @@ import math
 import numpy as np
 
 from dataclasses import dataclass, field
-from dsTools.auxiliar import Miscellaneous as misc
+from src.auxiliar import Miscellaneous as misc
 
 @dataclass
 class Bbox:

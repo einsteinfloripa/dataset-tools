@@ -2,7 +2,7 @@ import shutil
 import random
 from pathlib import Path
 
-from dsTools.auxiliar import PathParsers
+from src.auxiliar import PathParsers
 
 class Formatter:
     

@@ -1,5 +1,5 @@
 import cv2
-from dsTools.auxiliar import (
+from src.auxiliar import (
 PathParsers,
 mkdir_if_success)
 

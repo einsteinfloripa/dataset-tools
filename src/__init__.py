@@ -1,7 +1,7 @@
-from dsTools.cropper import Cropper
-from dsTools.drawer import Drawer
-from dsTools.label_handler import LabelHandler
-from dsTools.formatter import Formatter
+from src.cropper import Cropper
+from src.drawer import Drawer
+from src.label_handler import LabelHandler
+from src.formatter import Formatter
 
 #TODO: split train test and validation
 #TODO: resize operations

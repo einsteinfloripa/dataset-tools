@@ -1,7 +1,7 @@
 import cv2
 
-from dsTools.defs import Bbox
-from dsTools.auxiliar import (
+from src.defs import Bbox
+from src.auxiliar import (
 PathParsers,
 mkdir_if_success)
 
